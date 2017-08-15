@@ -62,13 +62,18 @@ class Envs(object):
         return env.observation_space.to_jsonable(obs)
 
     def step(self, instance_id, action, render):
-        env = self._lookup_env(instance_id)
-        if isinstance( action, six.integer_types ):
+        env = self._lookup_env(instance_id)  
+        
+        if (isinstance(env.action_space,gym.spaces.tuple_space.Tuple)):
+            nice_action = tuple(action)
+        elif isinstance( action, six.integer_types ):
             nice_action = action
         else:
             nice_action = np.array(action)
+            
         if render:
             env.render()
+
         [observation, reward, done, info] = env.step(nice_action)
         obs_jsonable = env.observation_space.to_jsonable(observation)
         return [obs_jsonable, reward, done, info]
@@ -122,6 +127,9 @@ class Envs(object):
         elif info['name'] == 'HighLow':
             info['num_rows'] = space.num_rows
             info['matrix'] = [((float(x) if x != -np.inf else -1e100) if x != +np.inf else +1e100) for x in np.array(space.matrix).flatten()]
+        elif info['name'] == 'Tuple':
+            info['spaces'] = map(self._get_space_properties, space.spaces)
+                        
         return info
 
     def monitor_start(self, instance_id, directory, force, resume, video_callable):
@@ -143,8 +151,13 @@ class Envs(object):
 
 ########## App setup ##########
 app = Flask(__name__)
+
+
+app.config['SESSION_REFRESH_EACH_REQUEST'] = False #just in case, eliminate cookies
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+
 envs = Envs()
+
 ########## Error handling ##########
 class InvalidUsage(Exception):
     status_code = 400
@@ -232,7 +245,9 @@ def env_reset(instance_id):
         - observation: the initial observation of the space
     """
     observation = envs.reset(instance_id)
-    if np.isscalar(observation):
+    
+    #Tuple environments will return a raw 'int' here    
+    if not (type(observation) is int) and np.isscalar(observation):
         observation = observation.item()
     return jsonify(observation = observation)
 
