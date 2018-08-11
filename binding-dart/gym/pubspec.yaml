@@ -1,0 +1,19 @@
+# -*- compile-command: "pub get"; -*-
+
+name: gym
+description: A Dart client library for an OpenAI Gym server.
+version: 1.0.0
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+dependencies:
+#  path: ^1.4.1
+  http: '^0.11.3'
+
+
+dev_dependencies:
+  test: ^1.0.0
+  build_runner: ^0.9.0
+  json_serializable: ^1.0.0
+  mockito: '^3.0.0'
