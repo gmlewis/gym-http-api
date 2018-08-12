@@ -43,6 +43,19 @@ class Space {
       this.numRows,
       this.matrix});
 
+  factory Space.fromJSON(dynamic info) {
+    return Space(
+      name: info['name'] as String,
+      shape: info.containsKey('shape') ? List<int>.from(info['shape']) : null,
+      low: info.containsKey('low') ? List<double>.from(info['low']) : null,
+      high: info.containsKey('high') ? List<double>.from(info['high']) : null,
+      n: info['n'] as int,
+      numRows: info['numRows'] as int,
+      matrix:
+          info.containsKey('matrix') ? List<double>.from(info['matrix']) : null,
+    );
+  }
+
   // Name is the name of the space, such as 'Box', 'HighLow',
   // or 'Discrete'.
   final String name;
@@ -73,18 +86,32 @@ class Space {
   }
 }
 
-Space convertSpaceResult(Map<String, dynamic> json) {
+// ActionSpace defines the actions format.
+class ActionSpace {
+  // TODO: Make this an abstract base class.
+  ActionSpace({this.name, this.spaces, this.space});
+
+  final String name;
+  final List<Space> spaces;
+  final Space space;
+}
+
+ActionSpace convertActionSpaceResult(Map<String, dynamic> json) {
   final info = json['info'];
-  return Space(
-    name: info['name'] as String,
-    shape: info.containsKey('shape') ? List<int>.from(info['shape']) : null,
-    low: info.containsKey('low') ? List<double>.from(info['low']) : null,
-    high: info.containsKey('high') ? List<double>.from(info['high']) : null,
-    n: info['n'] as int,
-    numRows: info['numRows'] as int,
-    matrix:
-        info.containsKey('matrix') ? List<double>.from(info['matrix']) : null,
-  );
+  final name = info['name'];
+  if (name == 'Tuple') {
+    var spaces = <Space>[];
+    for (var space in info['spaces']) {
+      spaces.add(Space.fromJSON(space));
+    }
+    return ActionSpace(name: name, spaces: spaces);
+  }
+  return ActionSpace(name: name, space: Space.fromJSON(info));
+}
+
+Space convertObservationSpaceResult(Map<String, dynamic> json) {
+  final info = json['info'];
+  return Space.fromJSON(info);
 }
 
 StepResult convertStepResult(Map<String, dynamic> json) {
@@ -192,8 +219,9 @@ class GymClient {
   }
 
   /// actionSpace fetches the action space.
-  Future<Space> actionSpace(String id) {
-    return getJSON('/v1/envs/$id/action_space/', convert: convertSpaceResult)
+  Future<ActionSpace> actionSpace(String id) {
+    return getJSON('/v1/envs/$id/action_space/',
+            convert: convertActionSpaceResult)
         .then((resp) {
       if (debug) print('actionSpace: resp=$resp');
       return resp;
@@ -203,7 +231,7 @@ class GymClient {
   /// observationSpace fetches the observation space.
   Future<Space> observationSpace(String id) {
     return getJSON('/v1/envs/$id/observation_space/',
-            convert: convertSpaceResult)
+            convert: convertObservationSpaceResult)
         .then((resp) {
       if (debug) print('observationSpace: resp=$resp');
       return resp;

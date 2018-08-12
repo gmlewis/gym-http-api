@@ -1,0 +1,12 @@
+name: copy
+description: A sample command-line application using the Dart OpenAI Gym binding.
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+dependencies:
+  gym:
+    path: '../../gym'
+
+dev_dependencies:
+  test: ^1.0.0

@@ -62,15 +62,19 @@ class Envs(object):
         return env.observation_space.to_jsonable(obs)
 
     def step(self, instance_id, action, render):
-        env = self._lookup_env(instance_id)  
-        
+        env = self._lookup_env(instance_id)
+
+        # print("GML:", env.action_space)
         if (isinstance(env.action_space,gym.spaces.tuple_space.Tuple)):
-            nice_action = tuple(action)
+            try:
+                nice_action = tuple(action)
+            except:
+                nice_action = action
         elif isinstance( action, six.integer_types ):
             nice_action = action
         else:
             nice_action = np.array(action)
-            
+
         if render:
             env.render()
 
@@ -129,7 +133,7 @@ class Envs(object):
             info['matrix'] = [((float(x) if x != -np.inf else -1e100) if x != +np.inf else +1e100) for x in np.array(space.matrix).flatten()]
         elif info['name'] == 'Tuple':
             info['spaces'] = map(self._get_space_properties, space.spaces)
-                        
+
         return info
 
     def monitor_start(self, instance_id, directory, force, resume, video_callable):
@@ -245,8 +249,8 @@ def env_reset(instance_id):
         - observation: the initial observation of the space
     """
     observation = envs.reset(instance_id)
-    
-    #Tuple environments will return a raw 'int' here    
+
+    #Tuple environments will return a raw 'int' here
     if not (type(observation) is int) and np.isscalar(observation):
         observation = observation.item()
     return jsonify(observation = observation)
@@ -289,6 +293,9 @@ def env_action_space_info(instance_id):
     space to space
     """
     info = envs.get_action_space_info(instance_id)
+    if 'spaces' in info:
+        info['spaces'] = list(info['spaces'])
+    print("GML:", info)
     return jsonify(info = info)
 
 @app.route('/v1/envs/<instance_id>/action_space/sample', methods=['GET'])
@@ -301,8 +308,8 @@ def env_action_space_sample(instance_id):
         for the environment instance
     Returns:
 
-    	- action: a randomly sampled element belonging to the action_space
-    """  
+        - action: a randomly sampled element belonging to the action_space
+    """
     action = envs.get_action_space_sample(instance_id)
     return jsonify(action = action)
 
@@ -310,14 +317,14 @@ def env_action_space_sample(instance_id):
 def env_action_space_contains(instance_id, x):
     """
     Assess that value is a member of the env's action_space
-    
+
     Parameters:
         - instance_id: a short identifier (such as '3c657dbc')
         for the environment instance
-	    - x: the value to be checked as member
+        - x: the value to be checked as member
     Returns:
         - member: whether the value passed as parameter belongs to the action_space
-    """  
+    """
 
     member = envs.get_action_space_contains(instance_id, x)
     return jsonify(member = member)
