@@ -1,4 +1,4 @@
-// -*- compile-command: "dartfmt -w . && dart gym_base.dart"; -*-
+// -*- compile-command: "cd ../.. && ./df.sh"; -*-
 
 import 'dart:async';
 import 'dart:convert';
@@ -21,7 +21,13 @@ class StepResult {
   final dynamic info; // Debug information from OpenAI Gym.
 
   String toString() {
-    return 'StepResult(observation: $observation, reward: $reward, done: $done, info: $info)';
+    var args = [];
+    if (observation != null) args.add('observation: $observation');
+    if (reward != null) args.add('reward: $reward');
+    if (done != null) args.add('done: $done');
+    if (info != null) args.add('info: $info');
+    var argsString = args.join(', ');
+    return 'StepResult($argsString)';
   }
 }
 
@@ -54,7 +60,16 @@ class Space {
   List<double> matrix;
 
   String toString() {
-    return 'Space(name: $name, shape: $shape, low: $low, high: $high, n: $n, numRows: $numRows, matrix: $matrix)';
+    var args = [];
+    if (name != null) args.add('name: $name');
+    if (shape != null) args.add('shape: $shape');
+    if (low != null) args.add('low: $low');
+    if (high != null) args.add('high: $high');
+    if (n != null) args.add('n: $n');
+    if (numRows != null) args.add('numRows: $numRows');
+    if (matrix != null) args.add('matrix: $matrix');
+    var argsString = args.join(', ');
+    return 'Space($argsString)';
   }
 }
 

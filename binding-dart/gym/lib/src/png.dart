@@ -1,3 +1,5 @@
+// -*- compile-command: "cd ../.. && ./df.sh"; -*-
+
 import 'dart:io' as io;
 import 'package:image/image.dart';
 
