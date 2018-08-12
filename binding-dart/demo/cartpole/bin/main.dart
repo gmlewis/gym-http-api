@@ -1,10 +1,9 @@
 // -*- compile-command: "dartfmt -w . && dart main.dart"; -*-
 
-import 'package:cartpole/cartpole.dart' as cartpole;
 import 'package:gym/gym.dart';
 
 main(List<String> arguments) async {
-  var client = GymClient();
+  var client = GymClient(debug: false);
 
   // Test the API for listing all instances.
   var insts = await client.listAll();
