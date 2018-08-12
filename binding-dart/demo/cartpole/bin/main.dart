@@ -1,4 +1,4 @@
-// -*- compile-command: "dartfmt -w . && dart main.dart"; -*-
+// -*- compile-command: "cd .. && ./df.sh"; -*-
 
 import 'package:gym/gym.dart';
 

@@ -1,9 +1,6 @@
-// -*- compile-command: "dartfmt -w . && dart main.dart"; -*-
-
-import 'dart:io' as io;
+// -*- compile-command: "cd .. && ./df.sh"; -*-
 
 import 'package:gym/gym.dart';
-import 'package:image/image.dart';
 
 main(List<String> arguments) async {
   var client = GymClient(debug: false);
