@@ -76,7 +76,7 @@ StepResult convertStepResult(Map<String, dynamic> json) {
   return StepResult(
     observation: json['observation'],
     reward: json['reward'] as double,
-    done: json['done'] as bool,
+    done: (json['done'] as bool) ?? false,
     info: json['info'],
   );
 }

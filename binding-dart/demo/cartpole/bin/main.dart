@@ -45,7 +45,7 @@ main(List<String> arguments) async {
     var stepResult = await client.step(id, action);
     obs = stepResult.observation;
     print('reward: ${stepResult.reward}, -- observation: $obs');
-    if (stepResult.done != null && stepResult.done) break;
+    if (stepResult.done) break;
   }
 
   await client.closeMonitor(id);

@@ -2,10 +2,13 @@
 
 import 'package:test/test.dart';
 
-// import 'package:gym/gym.dart';
+import 'package:gym/gym.dart';
 
 void main() {
-  group('basic', () {
-    test('hello world', () {});
+  group('step result', () {
+    test('done is not null', () {
+      var stepResult = convertStepResult({});
+      expect(stepResult.done, isNotNull);
+    });
   });
 }
