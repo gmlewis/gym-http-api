@@ -64,18 +64,18 @@ class Envs(object):
     def step(self, instance_id, action, render):
         env = self._lookup_env(instance_id)
 
-        print("GML:", env.action_space)
+        # print("GML:", env.action_space)
         if (isinstance(env.action_space, gym.spaces.tuple_space.Tuple)):
-            print("GML: Tuple")
+            # print("GML: Tuple")
             try:
                 nice_action = tuple(action)
             except:
                 nice_action = action
         elif isinstance( action, six.integer_types ):
-            print("GML: six.integer_types")
+            # print("GML: six.integer_types")
             nice_action = action
         else:
-            print("GML: np.array")
+            # print("GML: np.array")
             nice_action = np.array(action)
 
         if render:
@@ -290,7 +290,7 @@ def env_step(instance_id):
     """
     json = request.get_json()
     action = get_required_param(json, 'action')
-    print('GML:', action)
+    # print('GML:', action)
     render = get_optional_param(json, 'render', False)
     [obs_jsonable, reward, done, info] = envs.step(instance_id, action, render)
     return jsonify(observation = obs_jsonable,
