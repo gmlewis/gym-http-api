@@ -106,5 +106,41 @@ void main() {
       expect(space,
           'Space(name: Box, shape: [0, 1, 2], low: [-1.0, 1.0], high: [-1.0, 1.0], n: 5, numRows: 3, matrix: [1.0, 0.0, 0.0, 1.0])');
     });
+
+    // ActionSpace
+
+    test('ActionSpace.toString shows no args', () {
+      var actionSpace = ActionSpace().toString();
+      expect(actionSpace, 'ActionSpace()');
+    });
+
+    test('ActionSpace.toString shows name', () {
+      var actionSpace = ActionSpace(name: 'Discrete').toString();
+      expect(actionSpace, 'ActionSpace(name: Discrete)');
+    });
+
+    test('ActionSpace.toString shows space', () {
+      var actionSpace =
+          ActionSpace(space: Space(name: 'Discrete', n: 6)).toString();
+      expect(actionSpace, 'ActionSpace(space: Space(name: Discrete, n: 6))');
+    });
+
+    test('ActionSpace.toString shows spaces', () {
+      var actionSpace = ActionSpace(spaces: [
+        Space(name: 'Discrete', n: 6),
+        Space(name: 'Discrete', n: 2)
+      ]).toString();
+      expect(actionSpace,
+          'ActionSpace(spaces: [Space(name: Discrete, n: 6), Space(name: Discrete, n: 2)])');
+    });
+
+    test('ActionSpace.toString shows all fields', () {
+      var actionSpace = ActionSpace(
+        name: 'Tuple',
+        spaces: [Space(name: 'Discrete', n: 6), Space(name: 'Discrete', n: 2)],
+      ).toString();
+      expect(actionSpace,
+          'ActionSpace(name: Tuple, spaces: [Space(name: Discrete, n: 6), Space(name: Discrete, n: 2)])');
+    });
   });
 }

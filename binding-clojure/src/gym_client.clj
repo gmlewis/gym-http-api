@@ -53,8 +53,8 @@
 
 (defn env-action-space-contains
   [instance-id x]
-  (-> (str envs-path instance-id "/action_space/contains/" x)
-      (get-req)
+  (-> (str envs-path instance-id "/action_space/contains")
+      (post-req x)
       :member))
 
 (defn env-monitor-start

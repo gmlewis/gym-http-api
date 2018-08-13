@@ -172,15 +172,11 @@ func (c *Client) SampleAction(id InstanceID) (interface{}, error) {
 //
 // Currently, only int action types are supported.
 func (c *Client) ContainsAction(id InstanceID, act interface{}) (bool, error) {
-	num, ok := act.(int)
-	if !ok {
-		return false, fmt.Errorf("contains action: unexpected action type %T", act)
-	}
 	var resp struct {
 		Member bool `json:"member"`
 	}
-	path := id.path() + "/action_space/contains/" + strconv.Itoa(num)
-	if err := c.get(path, &resp); err != nil {
+	path := id.path() + "/action_space/contains"
+	if err := c.post(path, act, &resp); err != nil {
 		return false, fmt.Errorf("contains action: %s", err)
 	}
 	return resp.Member, nil

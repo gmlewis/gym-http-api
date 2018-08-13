@@ -65,7 +65,7 @@ class Envs(object):
         env = self._lookup_env(instance_id)
 
         # print("GML:", env.action_space)
-        if (isinstance(env.action_space,gym.spaces.tuple_space.Tuple)):
+        if (isinstance(env.action_space, gym.spaces.tuple_space.Tuple)):
             try:
                 nice_action = tuple(action)
             except:
@@ -82,9 +82,20 @@ class Envs(object):
         obs_jsonable = env.observation_space.to_jsonable(observation)
         return [obs_jsonable, reward, done, info]
 
-    def get_action_space_contains(self, instance_id, x):
+    def get_action_space_contains(self, instance_id, j):
         env = self._lookup_env(instance_id)
-        return env.action_space.contains(int(x))
+        # print("GML:", env.action_space, ", j:", j)
+        info = self._get_space_properties(env.action_space)
+        # print("GML:", info)
+        if isinstance(j, list):
+            return env.action_space.contains(j)
+        for key, value in j.items():
+            # Convert both values to json for comparibility
+            if json.dumps(info[key]) != json.dumps(value):
+                print('Values for "{}" do not match. Passed "{}", Observed "{}".'.format(key, value, info[key]))
+                return False
+        return True
+        #GML return env.action_space.contains(int(x))
 
     def get_action_space_info(self, instance_id):
         env = self._lookup_env(instance_id)
@@ -95,7 +106,8 @@ class Envs(object):
         action = env.action_space.sample()
         if isinstance(action, (list, tuple)) or ('numpy' in str(type(action))):
             try:
-                action = action.tolist()
+                #GML action = action.tolist()
+                action = list(action)
             except TypeError:
                 print(type(action))
                 print('TypeError')
@@ -295,7 +307,7 @@ def env_action_space_info(instance_id):
     info = envs.get_action_space_info(instance_id)
     if 'spaces' in info:
         info['spaces'] = list(info['spaces'])
-    print("GML:", info)
+    # print("GML:", info)
     return jsonify(info = info)
 
 @app.route('/v1/envs/<instance_id>/action_space/sample', methods=['GET'])
@@ -313,20 +325,20 @@ def env_action_space_sample(instance_id):
     action = envs.get_action_space_sample(instance_id)
     return jsonify(action = action)
 
-@app.route('/v1/envs/<instance_id>/action_space/contains/<x>', methods=['GET'])
-def env_action_space_contains(instance_id, x):
+@app.route('/v1/envs/<instance_id>/action_space/contains', methods=['POST'])
+def env_action_space_contains(instance_id):
     """
     Assess that value is a member of the env's action_space
 
     Parameters:
         - instance_id: a short identifier (such as '3c657dbc')
         for the environment instance
-        - x: the value to be checked as member
     Returns:
         - member: whether the value passed as parameter belongs to the action_space
     """
 
-    member = envs.get_action_space_contains(instance_id, x)
+    j = request.get_json()
+    member = envs.get_action_space_contains(instance_id, j)
     return jsonify(member = member)
 
 @app.route('/v1/envs/<instance_id>/observation_space/contains', methods=['POST'])

@@ -82,8 +82,8 @@ classdef gym_http_client < handle
 
         function [resp_data] = env_action_space_contains(obj, instance_id, x)
             route = ['/v1/envs/', instance_id, ...
-                     '/action_space/contains/', num2str(x)];
-            resp_data = obj.get_request(route);
+                     '/action_space/contains'];
+            resp_data = obj.post_request(route, x);
             resp_data = resp_data.member;
         end
 

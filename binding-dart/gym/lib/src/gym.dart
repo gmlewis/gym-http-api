@@ -94,6 +94,15 @@ class ActionSpace {
   final String name;
   final List<Space> spaces;
   final Space space;
+
+  String toString() {
+    var args = [];
+    if (name != null) args.add('name: $name');
+    if (space != null) args.add('space: $space');
+    if (spaces != null) args.add('spaces: $spaces');
+    var argsString = args.join(', ');
+    return 'ActionSpace($argsString)';
+  }
 }
 
 ActionSpace convertActionSpaceResult(Map<String, dynamic> json) {
@@ -250,10 +259,8 @@ class GymClient {
 
   /// containsAction checks if an action is contained in the
   /// action space.
-  ///
-  /// Currently, only int action types are supported.
   Future<bool> containsAction(String id, dynamic action) {
-    return getJSON('/v1/envs/$id/action_space/contains/$action',
+    return postJSON('/v1/envs/$id/action_space/contains', action,
             convert: fieldBool('member'))
         .then((resp) {
       if (debug) print('containsAction: resp=$resp');

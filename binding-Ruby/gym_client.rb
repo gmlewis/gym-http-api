@@ -87,8 +87,8 @@ class Client
   end
 
   def env_action_space_contains(instance_id, x)
-    route = "/v1/envs/#{instance_id}/action_space/contains/#{x}"
-    resp = self.get_request(route)
+    route = "/v1/envs/#{instance_id}/action_space/contains"
+    resp = self.post_request(route, x)
     member = resp['member']
     return member
   end

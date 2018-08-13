@@ -86,7 +86,7 @@ open class GymClient {
     /// Checks if an action is contained in the action space. Currently, only int action types are supported
     open func containsAction(instanceID:InstanceID, action:Action) -> Bool {
         guard action.discreteValue != nil else { fatalError("Currently only int action types are supported") }
-        let json = get(url: baseURL.appendingPathComponent("/v1/envs/\(instanceID)/action_space/contains/\(action.discreteValue!)"))
+        let json = post(url: baseURL.appendingPathComponent("/v1/envs/\(instanceID)/action_space/contains"), parameter: action)
         let isMember = (json as! [String:Bool])["member"]!
         return isMember
     }

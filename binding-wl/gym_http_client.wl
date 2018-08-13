@@ -214,8 +214,8 @@ an element of the action space, otherwise False.
 
 EnvActionSpaceContains[ins_GymEnvironmentObject, act_] := Catch @ Module[
 	{route, res},
-	route = StringJoin["/v1/envs/", ins["ID"], "/action_space/contains/", ToString[act]];
-	res = gymGETRequest[ins["URL"], route];
+	route = StringJoin["/v1/envs/", ins["ID"], "/action_space/contains"];
+	res = gymPOSTRequest[ins["URL"], route, act];
 	res["member"]
 ]
 

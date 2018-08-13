@@ -1,9 +1,9 @@
-// -*- compile-command: "cd .. && ./df.sh"; -*-
+// -*- compile-command: "pushd .. && ./df.sh && popd && dart main.dart"; -*-
 
 import 'package:gym/gym.dart';
 
 main(List<String> arguments) async {
-  var client = GymClient(debug: false);
+  var client = GymClient(debug: true);
 
   // Test the API for listing all instances.
   var insts = await client.listAll();
