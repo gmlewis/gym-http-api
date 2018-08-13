@@ -1,3 +1,6 @@
+// -*- compile-command: "go run main.go"; -*-
+
+// pong is a sample program using the Go OpenAI Gym binding.
 package main
 
 import (
@@ -7,7 +10,7 @@ import (
 	"image/png"
 	"os"
 
-	gym "github.com/openai/gym-http-api/binding-go"
+	gym "github.com/gmlewis/gym-http-api/binding-go"
 )
 
 const BaseURL = "http://localhost:5000"
@@ -25,19 +28,33 @@ func main() {
 	}
 	defer client.Close(id)
 
+	// Test space information APIs.
+	actSpace, err := client.ActionSpace(id)
+	must(err)
+	fmt.Printf("Action space: %+v\n", actSpace)
+	_, err = client.ObservationSpace(id)
+	must(err)
+	// fmt.Printf("Observation space: %+v\n", obsSpace)
+
 	// Take a few random steps
+	fmt.Println("\nStarting new episode...")
 	_, err = client.Reset(id)
 	must(err)
 	var lastObservation interface{}
-	for i := 0; i < 5; i++ {
+	for i := 1; i <= 5; i++ {
+		fmt.Println("Observation #", i)
 		action, err := client.SampleAction(id)
 		must(err)
-		lastObservation, _, _, _, err = client.Step(id, action, false)
+		fmt.Println("Taking action:", action)
+		var reward float64
+		lastObservation, reward, _, _, err = client.Step(id, action, false)
+		fmt.Println("reward:", reward)
 		must(err)
 	}
 
 	// Produce an image from the last video frame and
 	// save it to pong.png.
+	fmt.Println("Writing image to /tmp/pong.png...")
 	frame := lastObservation.([][][]float64)
 	img := image.NewRGBA(image.Rect(0, 0, len(frame[0]), len(frame)))
 	for rowIdx, row := range frame {
@@ -51,7 +68,7 @@ func main() {
 			img.SetRGBA(colIdx, rowIdx, color)
 		}
 	}
-	outFile, err := os.Create("pong.png")
+	outFile, err := os.Create("/tmp/pong.png")
 	must(err)
 	defer outFile.Close()
 	must(png.Encode(outFile, img))

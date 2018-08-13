@@ -20,7 +20,7 @@ main(List<String> arguments) async {
 
   // Produce an image from the last video frame and
   // save it to pong.png.
-  writePNG(lastObservation, 'pong.png');
+  writePNG(lastObservation, '/tmp/pong.png');
 
   await client.close(id);
 }

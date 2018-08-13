@@ -198,7 +198,7 @@ class GymClient {
   // For discrete spaces, it is an int.
   // For vector spaces, it is a List<double>.
   Future<dynamic> reset(String id) {
-    return postJSON('/v1/envs/$id/reset/', {},
+    return postJSON('/v1/envs/$id/reset/', '',
             convert: fieldDynamic('observation'))
         .then((resp) {
       if (debug) print('reset: resp=$resp');

@@ -1,6 +1,6 @@
 // -*- compile-command: "go run main.go"; -*-
 
-// cartpole is a sample program using the Go OpenAI Gym binding.
+// copy is a sample program using the Go OpenAI Gym binding.
 package main
 
 import (
@@ -15,13 +15,8 @@ func main() {
 	client, err := gym.NewClient(BaseURL)
 	must(err)
 
-	// Test the API for listing all instances.
-	insts, err := client.ListAll()
-	must(err)
-	fmt.Println("Started with instances:", insts)
-
 	// Create environment instance.
-	id, err := client.Create("CartPole-v0")
+	id, err := client.Create("Copy-v0")
 	must(err)
 	defer client.Close(id)
 
@@ -34,11 +29,10 @@ func main() {
 	fmt.Printf("Observation space: %+v\n", obsSpace)
 
 	// Start monitoring to a temp directory.
-	must(client.StartMonitor(id, "/tmp/cartpole-monitor", false, false, false))
+	must(client.StartMonitor(id, "/tmp/copy-monitor", true, false, false))
 
 	// Run through an episode.
-	fmt.Println()
-	fmt.Println("Starting new episode...")
+	fmt.Println("\nStarting new episode...")
 	obs, err := client.Reset(id)
 	must(err)
 	fmt.Println("First observation:", obs)
@@ -46,13 +40,14 @@ func main() {
 		// Sample a random action to take.
 		act, err := client.SampleAction(id)
 		must(err)
+		// act := rand.Intn(obsSpace.N)
 		fmt.Println("Taking action:", act)
 
 		// Unnecessary; demonstrates the ContainsAction API.
 		c, err := client.ContainsAction(id, act)
 		must(err)
 		if !c {
-			panic("sampled action not contained in space")
+			panic(fmt.Sprintf("sampled action %v not contained in space", act))
 		}
 
 		// Take the action, getting a new observation, a reward,
@@ -73,7 +68,7 @@ func main() {
 	// variable or set the second argument of Upload() to a
 	// non-empty string.
 	//
-	//     must(client.Upload("/tmp/cartpole-monitor", "", ""))
+	//     must(client.Upload("/tmp/copy-monitor", "", ""))
 	//
 }
 

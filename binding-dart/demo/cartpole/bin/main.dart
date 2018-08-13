@@ -9,10 +9,10 @@ main(List<String> arguments) async {
   var insts = await client.listAll();
   print('insts=$insts');
 
-  // Close all open instances.
-  // insts.forEach((k, v) async {
-  //   await client.close(k);
-  // });
+  // Close all open instances, just for testing. Harmful if running multiple tests.
+  insts.forEach((k, v) async {
+    await client.close(k);
+  });
 
   // Create environment instance.
   var id = await client.create('CartPole-v0');

@@ -64,15 +64,18 @@ class Envs(object):
     def step(self, instance_id, action, render):
         env = self._lookup_env(instance_id)
 
-        # print("GML:", env.action_space)
+        print("GML:", env.action_space)
         if (isinstance(env.action_space, gym.spaces.tuple_space.Tuple)):
+            print("GML: Tuple")
             try:
                 nice_action = tuple(action)
             except:
                 nice_action = action
         elif isinstance( action, six.integer_types ):
+            print("GML: six.integer_types")
             nice_action = action
         else:
+            print("GML: np.array")
             nice_action = np.array(action)
 
         if render:
@@ -87,7 +90,7 @@ class Envs(object):
         # print("GML:", env.action_space, ", j:", j)
         info = self._get_space_properties(env.action_space)
         # print("GML:", info)
-        if isinstance(j, list):
+        if isinstance(j, (list, int)):
             return env.action_space.contains(j)
         for key, value in j.items():
             # Convert both values to json for comparibility
@@ -262,7 +265,9 @@ def env_reset(instance_id):
     """
     observation = envs.reset(instance_id)
 
-    #Tuple environments will return a raw 'int' here
+    # if isinstance(observation, list) and isinstance(observation[0], np.float32):
+    #     print('GML:', observation)
+    #     observation = [float(x) for x in observation]
     if not (type(observation) is int) and np.isscalar(observation):
         observation = observation.item()
     return jsonify(observation = observation)
@@ -285,6 +290,7 @@ def env_step(instance_id):
     """
     json = request.get_json()
     action = get_required_param(json, 'action')
+    print('GML:', action)
     render = get_optional_param(json, 'render', False)
     [obs_jsonable, reward, done, info] = envs.step(instance_id, action, render)
     return jsonify(observation = obs_jsonable,
@@ -371,6 +377,10 @@ def env_observation_space_info(instance_id):
         varies from space to space
     """
     info = envs.get_observation_space_info(instance_id)
+    if info['name'] == 'Box':
+        info['shape'] = list(info['shape'])
+        info['low'] = [float(x) for x in info['low']]
+        info['high'] = [float(x) for x in info['high']]
     return jsonify(info = info)
 
 @app.route('/v1/envs/<instance_id>/monitor/start/', methods=['POST'])

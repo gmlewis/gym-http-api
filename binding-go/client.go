@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"os"
 	"reflect"
-	"strconv"
 )
 
 // InstanceID uniquely identifies a running instance.
@@ -257,11 +256,11 @@ func (c *Client) post(path string, data, result interface{}) error {
 	u.Path = path
 	body, err := json.Marshal(data)
 	if err != nil {
-		return err
+		return fmt.Errorf("json.Marshal(%v): %v", err)
 	}
 	resp, err := http.Post(u.String(), "application/json", bytes.NewReader(body))
 	if err != nil {
-		return err
+		return fmt.Errorf("http.Post: %v", err)
 	}
 	return processResponse(resp.Body, result)
 }
