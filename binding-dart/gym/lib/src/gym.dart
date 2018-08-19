@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import 'package:http_retry/http_retry.dart';
 
 const _defaultBaseURL = 'http://localhost:5000';
 
@@ -167,8 +168,14 @@ class GymClient {
       // Strip trailing slash.
       this.baseURL = this.baseURL.substring(0, this.baseURL.length - 1);
     }
+    client = RetryClient(http.Client());
   }
 
+  dispose() {
+    client.close();
+  }
+
+  http.Client client;
   String baseURL;
   bool debug;
 
@@ -325,7 +332,7 @@ class GymClient {
     JSONConverter<S, T> convert,
   }) {
     final url = _buildURL(path, params);
-    return http.get(url, headers: headers).then((response) {
+    return client.get(url, headers: headers).then((response) {
       final json = jsonDecode(response.body);
       if (debug) print('json=$json');
       convert ??= (input) => input as T;
@@ -347,7 +354,7 @@ class GymClient {
     body = json.encode(body);
     headers ??= {};
     headers['content-type'] = 'application/json';
-    return http.post(url, headers: headers, body: body).then((response) {
+    return client.post(url, headers: headers, body: body).then((response) {
       if (response.body == null || response.body.length == 0) return null;
       final json = jsonDecode(response.body);
       if (debug) print('json=$json');
